@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database for Blazor Aggregator
+  db_aggregator:
+    image: postgres:15.3-alpine
+    container_name: db_aggregator
+    restart: always
+    environment:
+      POSTGRES_USER: aggregator_user
+      POSTGRES_PASSWORD: aggregator_pass
+      POSTGRES_DB: aggregator_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_aggregator_data:/var/lib/postgresql/data
+
+  # PostgreSQL Database for SkyLink API
+  db_skylink:
+    image: postgres:15.3-alpine
+    container_name: db_skylink
+    restart: always
+    environment:
+      POSTGRES_USER: skylink_user
+      POSTGRES_PASSWORD: skylink_pass
+      POSTGRES_DB: skylink_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_skylink_data:/var/lib/postgresql/data
+
+  # PostgreSQL Database for Nimbus API
+  db_nimbus:
+    image: postgres:15.3-alpine
+    container_name: db_nimbus
+    restart: always
+    environment:
+      POSTGRES_USER: nimbus_user
+      POSTGRES_PASSWORD: nimbus_pass
+      POSTGRES_DB: nimbus_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - db_nimbus_data:/var/lib/postgresql/data
+
+
+volumes:
+  db_aggregator_data:
+  db_skylink_data:
+  db_nimbus_data:

@@ -1,0 +1,6 @@
+@NimbusApi_HostAddress = http://localhost:5135
+
+GET {{NimbusApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

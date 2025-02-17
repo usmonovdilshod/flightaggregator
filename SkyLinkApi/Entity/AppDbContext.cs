@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace FlightAggregator.Services;
+namespace SkyLinkApi.Entity;
 
 public partial class AppDbContext : DbContext
 {
