@@ -1,11 +1,22 @@
 ﻿using FlightAggregator.Components;
 using FlightAggregator.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+
+
+#region DATABASE
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+#endregion
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+
 
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<FlightService>();
