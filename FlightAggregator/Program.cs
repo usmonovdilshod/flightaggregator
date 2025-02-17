@@ -1,4 +1,5 @@
-﻿using FlightAggregator.Components;
+﻿using FlightAggregator.Abstracts;
+using FlightAggregator.Components;
 using FlightAggregator.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ builder.Services.AddRazorComponents()
 
 
 builder.Services.AddMemoryCache();
-builder.Services.AddSingleton<FlightService>();
+builder.Services.AddSingleton<ISearchService, SearchService>();
 builder.Services.AddLogging();
 var app = builder.Build();
 
