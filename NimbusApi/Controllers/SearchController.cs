@@ -9,8 +9,8 @@ namespace NimbusApi.Controllers;
 public class SearchController(ISearchService searchService)
 {
     [HttpGet("search")]
-    public async Task<string> Search()
+    public async Task Search()
     {
-        return "keeeeeeeeeeeeeeee";
+
     }
 }
