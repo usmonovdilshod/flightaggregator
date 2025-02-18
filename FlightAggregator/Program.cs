@@ -1,6 +1,6 @@
 ﻿using FlightAggregator.Abstracts;
 using FlightAggregator.Components;
-using FlightAggregator.Entity;
+using FlightAggregator.Data;
 using FlightAggregator.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +9,7 @@ var services = builder.Services;
 
 
 #region DATABASE
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 #endregion
 
@@ -40,5 +40,9 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
+using var dbContext = dbContextFactory.CreateDbContext();
+await dbContext.Database.MigrateAsync();
 
 app.Run();

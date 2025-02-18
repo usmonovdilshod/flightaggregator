@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace FlightAggregator.Entity;
+namespace FlightAggregator.Data;
 
 public partial class AppDbContext : DbContext
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FlightAggregator.Models;
+namespace FlightAggregator.Entity;
 
 public abstract class BaseEntity
 {
