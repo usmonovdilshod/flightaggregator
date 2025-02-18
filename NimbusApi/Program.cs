@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NimbusApi.Abstracts;
-using NimbusApi.Entity;
+using NimbusApi.Data;
 using NimbusApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +8,7 @@ var services = builder.Services;
 
 
 #region DATABASE
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 #endregion
 // Add services to the container.
@@ -31,5 +31,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
+using var dbContext = dbContextFactory.CreateDbContext();
+await dbContext.Database.MigrateAsync();
 
 app.Run();
