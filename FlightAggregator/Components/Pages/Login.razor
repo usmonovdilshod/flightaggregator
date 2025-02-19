@@ -1,0 +1,14 @@
+﻿@page "/login"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inject NavigationManager Navigation
+
+<h3>Login</h3>
+<button @onclick="SignIn">Login with Google</button>
+
+@code {
+    private void SignIn()
+    {
+        Navigation.NavigateTo("signin-google", forceLoad: true);
+    }
+}

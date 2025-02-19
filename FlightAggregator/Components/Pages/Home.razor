@@ -3,72 +3,17 @@
 @using FlightAggregator.Services
 
 <PageTitle>Flights</PageTitle>
-@inject FlightService FlightService
 
 <h3>Search Flights</h3>
 
 <div>
     <input @bind="departure" placeholder="From" />
     <input @bind="arrival" placeholder="To" />
-    <button @onclick="SearchFlights">Search</button>
 </div>
 
-@if (flights == null)
-{
-    <p>Enter details and search flights.</p>
-}
-else if (flights.Count == 0)
-{
-    <p>No flights found.</p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Flight</th>
-                <th>Airline</th>
-                <th>Departure</th>
-                <th>Arrival</th>
-                <th>Price</th>
-                <th>Stops</th>
-                <th>Book</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var flight in flights)
-            {
-                <tr>
-                    <td>@flight.FlightNumber</td>
-                    <td>@flight.Airline</td>
-                    <td>@flight.DepartureTime</td>
-                    <td>@flight.ArrivalTime</td>
-                    <td>$@flight.Price</td>
-                    <td>@flight.Stops</td>
-                    <td>
-                        <button @onclick="() => BookFlight(flight.FlightNumber)">Book</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
 
 @code {
     private string departure = "";
     private string arrival = "";
-    private List<Flight> flights;
-
-    private async Task SearchFlights()
-    {
-        flights = await FlightService.SearchFlights(departure, arrival);
-    }
-
-    private void BookFlight(string flightNumber)
-    {
-        if (FlightService.BookFlight(flightNumber))
-        {
-            Console.WriteLine($"Flight {flightNumber} booked successfully!");
-        }
-    }
+   
 }
