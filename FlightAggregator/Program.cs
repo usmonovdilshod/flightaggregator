@@ -1,13 +1,11 @@
 ﻿using FlightAggregator.Abstracts;
 using FlightAggregator.Components;
-using FlightAggregator.Data;
 using FlightAggregator.ServiceCollection;
 using FlightAggregator.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
@@ -42,12 +40,6 @@ Log.Logger = new LoggerConfiguration()
 
 
 builder.Host.UseSerilog();
-
-#region DATABASE
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-#endregion
-
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -114,9 +106,5 @@ app.MapGet("/api/test", (ILogger<Program> logger) =>
     logger.LogInformation("Test log endpoint hit at {Time}", DateTime.UtcNow);
     return Results.Ok("Logged!");
 });
-
-var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
-using var dbContext = dbContextFactory.CreateDbContext();
-await dbContext.Database.MigrateAsync();
 
 app.Run();
