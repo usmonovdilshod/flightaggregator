@@ -1,8 +1,11 @@
 ﻿@page "/counter"
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @attribute [Authorize]
-
+@inject NavigationManager NavigationManager
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
@@ -11,11 +14,43 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<h3>Create Order</h3>
+
+<button @onclick="CreateOrder">Create Order</button>
+
+
+<h3>Logout</h3>
+<button class="btn btn-secondary" @onclick="Logout">Logout</button>
 @code {
     private int currentCount = 0;
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    private async Task CreateOrder()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            // Retrieve user info from claims
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = user.FindFirst(ClaimTypes.Email)?.Value;
+            var userName = user.Identity.Name;
+
+          
+        }
+        else
+        {
+        }
+    }
+
+    private void Logout()
+    {
+        // Navigate to the logout endpoint (force a full reload).
+        NavigationManager.NavigateTo("logout", forceLoad: true);
     }
 }

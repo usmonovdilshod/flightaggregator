@@ -2,8 +2,10 @@
 using FlightAggregator.Components;
 using FlightAggregator.Data;
 using FlightAggregator.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +31,13 @@ builder.Services.AddAuthentication(options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    options.Events.OnRedirectToAuthorizationEndpoint = context =>
+    {
+        // Append the prompt=select_account parameter to the redirect URI
+        var redirectUri = QueryHelpers.AddQueryString(context.RedirectUri, "prompt", "select_account");
+        context.Response.Redirect(redirectUri);
+        return Task.CompletedTask;
+    };
 });
 
 
@@ -59,6 +68,12 @@ app.MapRazorComponents<App>()
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/logout", async (HttpContext context) =>
+{
+    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    context.Response.Redirect("/");
+});
 
 var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
 using var dbContext = dbContextFactory.CreateDbContext();
