@@ -14,6 +14,7 @@ services:
       - "5434:5432"
     volumes:
       - db_skylink_data:/var/lib/postgresql/data
+      - ./Backup/skylink:/docker-entrypoint-initdb.d
 
   # PostgreSQL Database for Nimbus API
   db_nimbus:
@@ -28,6 +29,7 @@ services:
       - "5435:5432"
     volumes:
       - db_nimbus_data:/var/lib/postgresql/data
+      - ./Backup/nimbus:/docker-entrypoint-initdb.d
 
 
 volumes:
