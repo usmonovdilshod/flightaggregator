@@ -1,20 +1,6 @@
 version: '3.9'
 
 services:
-  # PostgreSQL Database for Blazor Aggregator
-  db_aggregator:
-    image: postgres:15.3-alpine
-    container_name: db_aggregator
-    restart: always
-    environment:
-      POSTGRES_USER: aggregator_user
-      POSTGRES_PASSWORD: aggregator_pass
-      POSTGRES_DB: aggregator_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - db_aggregator_data:/var/lib/postgresql/data
-
   # PostgreSQL Database for SkyLink API
   db_skylink:
     image: postgres:15.3-alpine
@@ -45,6 +31,5 @@ services:
 
 
 volumes:
-  db_aggregator_data:
   db_skylink_data:
   db_nimbus_data:
