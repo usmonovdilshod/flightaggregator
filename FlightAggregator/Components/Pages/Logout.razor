@@ -1,21 +1,36 @@
-﻿@page "/logout"
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Authentication.Cookies
-@inject NavigationManager Navigation
-@inject IHttpContextAccessor HttpContextAccessor
+﻿@page "/order"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>Logout</h3>
-<button @onclick="SignOut">Sign Out</button>
+<h3>Create Order</h3>
+
+<button @onclick="CreateOrder">Create Order</button>
 
 @code {
-    private async Task SignOut()
+    private async Task CreateOrder()
     {
-        // Ensure HttpContext is available
-        var httpContext = HttpContextAccessor.HttpContext;
-        if (httpContext != null)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
         {
-            await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // Retrieve user info from claims
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = user.FindFirst(ClaimTypes.Email)?.Value;
+            var userName = user.Identity.Name;
+
+            // Now, you can create your order using this user information.
+            // For example:
+            // var order = new Order { UserId = userId, Email = userEmail, OrderDate = DateTime.UtcNow, ... };
+            // await _dbContext.Orders.AddAsync(order);
+            // await _dbContext.SaveChangesAsync();
+
+            // Provide feedback to the user, etc.
         }
-        Navigation.NavigateTo("/");
+        else
+        {
+            // Handle unauthenticated case (e.g., redirect to login)
+        }
     }
 }
