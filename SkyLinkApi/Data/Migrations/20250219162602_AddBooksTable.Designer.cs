@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NimbusApi.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using SkyLinkApi.Data;
 
 #nullable disable
 
-namespace NimbusApi.Data.Migrations
+namespace SkyLinkApi.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250219162602_AddBooksTable")]
+    partial class AddBooksTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace NimbusApi.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("NimbusApi.Entity.BookEntity", b =>
+            modelBuilder.Entity("SkyLinkApi.Entity.BookEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,7 +58,7 @@ namespace NimbusApi.Data.Migrations
                     b.ToTable("books", (string)null);
                 });
 
-            modelBuilder.Entity("NimbusApi.Entity.FlightEntity", b =>
+            modelBuilder.Entity("SkyLinkApi.Entity.FlightEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,9 +112,9 @@ namespace NimbusApi.Data.Migrations
                     b.ToTable("flights", (string)null);
                 });
 
-            modelBuilder.Entity("NimbusApi.Entity.BookEntity", b =>
+            modelBuilder.Entity("SkyLinkApi.Entity.BookEntity", b =>
                 {
-                    b.HasOne("NimbusApi.Entity.FlightEntity", "Flight")
+                    b.HasOne("SkyLinkApi.Entity.FlightEntity", "Flight")
                         .WithMany()
                         .HasForeignKey("FlightId")
                         .OnDelete(DeleteBehavior.Cascade)

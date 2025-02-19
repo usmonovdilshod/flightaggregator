@@ -22,6 +22,39 @@ namespace SkyLinkApi.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("SkyLinkApi.Entity.BookEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("FlightId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("flight_id");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("book_pkey");
+
+                    b.HasIndex("FlightId");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_books_user_id");
+
+                    b.ToTable("books", (string)null);
+                });
+
             modelBuilder.Entity("SkyLinkApi.Entity.FlightEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -74,6 +107,17 @@ namespace SkyLinkApi.Data.Migrations
                     b.HasIndex("DestinationAirportCode");
 
                     b.ToTable("flights", (string)null);
+                });
+
+            modelBuilder.Entity("SkyLinkApi.Entity.BookEntity", b =>
+                {
+                    b.HasOne("SkyLinkApi.Entity.FlightEntity", "Flight")
+                        .WithMany()
+                        .HasForeignKey("FlightId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Flight");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,6 +15,7 @@ public partial class AppDbContext : DbContext
     }
 
     public DbSet<FlightEntity> Flights { get; set; } = null!;
+    public DbSet<BookEntity> Books { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,6 +41,29 @@ public partial class AppDbContext : DbContext
             entity.HasIndex(e => e.Airline);
         });
 
+        modelBuilder.Entity<BookEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("book_pkey");
+
+            entity.ToTable("books");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("id");
+            entity.Property(e => e.UserId)
+                .HasColumnName("user_id");
+            entity.Property(e => e.FlightId).HasColumnName("flight_id");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnName("created_at");
+
+            entity.HasOne(e => e.Flight)
+                  .WithMany()
+                  .HasForeignKey(e => e.FlightId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.UserId)
+                  .HasDatabaseName("ix_books_user_id");
+        });
         OnModelCreatingPartial(modelBuilder);
     }
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

@@ -1,16 +1,7 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "http": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:5135",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
+    "NimbusApi": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
