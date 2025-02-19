@@ -13,7 +13,7 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 #endregion
 // Add services to the container.
 builder.Services.AddSingleton<ISearchService, SearchService>();
-
+builder.Services.AddSingleton<IBookService, BookService>();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
