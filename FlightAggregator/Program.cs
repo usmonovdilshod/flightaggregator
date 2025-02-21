@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.WebUtilities;
+using MudBlazor.Services;
 using Serilog;
 using Serilog.Events;
 
@@ -43,6 +44,7 @@ builder.Host.UseSerilog();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddMudServices();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -56,7 +58,6 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     options.Events.OnRedirectToAuthorizationEndpoint = context =>
     {
-        // Append the prompt=select_account parameter to the redirect URI
         var redirectUri = QueryHelpers.AddQueryString(context.RedirectUri, "prompt", "select_account");
         context.Response.Redirect(redirectUri);
         return Task.CompletedTask;
@@ -69,6 +70,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ISearchService, SearchService>();
 builder.Services.AddLogging();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 
 builder.Services.AddAuthorization();
 
@@ -99,12 +101,6 @@ app.MapGet("/logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     context.Response.Redirect("/");
-});
-
-app.MapGet("/api/test", (ILogger<Program> logger) =>
-{
-    logger.LogInformation("Test log endpoint hit at {Time}", DateTime.UtcNow);
-    return Results.Ok("Logged!");
 });
 
 app.Run();
