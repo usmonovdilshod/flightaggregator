@@ -12,8 +12,8 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 #endregion
 // Add services to the container.
-builder.Services.AddSingleton<ISearchService, SearchService>();
-builder.Services.AddSingleton<IBookService, BookService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -33,8 +33,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
-using var dbContext = dbContextFactory.CreateDbContext();
-await dbContext.Database.MigrateAsync();
+//var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
+//using var dbContext = dbContextFactory.CreateDbContext();
+//await dbContext.Database.MigrateAsync();
 
 app.Run();

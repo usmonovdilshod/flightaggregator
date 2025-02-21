@@ -1,9 +1,15 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SkyLinkApi.Models;
 
+
 public class BookCreateRequest
 {
-    [JsonPropertyName("user_id")] public string UserId { get; set; } = null!;
-    [JsonPropertyName("flight_id")] public long FlightId { get; set; }
+    [Required(ErrorMessage = "UserId is required.")]
+    public string UserId { get; set; } = null!;
+
+    [Required(ErrorMessage = "FlightId is required.")]
+    [Range(1, long.MaxValue, ErrorMessage = "FlightId must be greater than 0.")]
+    public long FlightId { get; set; }
 }
+

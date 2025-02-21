@@ -1,17 +1,36 @@
-﻿using SkyLinkApi.Abstracts;
+﻿using Microsoft.EntityFrameworkCore;
+using SkyLinkApi.Abstracts;
+using SkyLinkApi.Data;
 using SkyLinkApi.Entity;
 
 namespace SkyLinkApi.Services;
 
-public class BookService : IBookService
+public class BookService(AppDbContext context) : IBookService
 {
-    public Task<long> Create(string userId, long FlightId, CancellationToken cancellationToken)
+    public async Task<long> Create(string userId, long flightId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+
+        var booking = new BookEntity
+        {
+            UserId = userId,
+            FlightId = flightId,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await context.AddAsync(booking, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+
+        return booking.Id; 
     }
 
-    public Task<List<BookEntity>> GetAll(string userId, CancellationToken cancellationToken)
+    
+    public async Task<List<BookEntity>> GetAll(string userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+
+        return await context.Books
+            .Include(b => b.Flight) 
+            .Where(b => b.UserId == userId)
+            .OrderByDescending(b => b.CreatedAt) 
+            .ToListAsync(cancellationToken);
     }
 }
