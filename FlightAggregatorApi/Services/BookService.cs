@@ -76,7 +76,8 @@ public class BookService : IBookService, IDisposable
     }
 
 
-    public async Task<ApiResponse<BookResponse>> GetAll(string userId, CancellationToken cancellationToken)
+    public async Task<ApiResponse<BookResponse>> GetAll(string userId, ApiOptions options,
+        CancellationToken cancellationToken)
     {
         var nimbusUrl = _configuration["ExternalUrls:Nimbus"];
         var skylinkUrl = _configuration["ExternalUrls:SkyLink"];
@@ -122,13 +123,28 @@ public class BookService : IBookService, IDisposable
         var allBookings = nimbusBookings.MapToViewList("Nimbus")
             .Concat(skylinkBookings.MapToViewList("SkyLink"))
             .ToList();
-        var count = allBookings.Count;
+
+        var sortedBookings = Sorting(allBookings, options).ToList();
+        var count = sortedBookings.Count;
         _logger.LogInformation("Fetched total {Count} bookings for User: {UserId}", count, userId);
 
-        return new ApiResponse<BookResponse>() { Items = allBookings, TotalItems = count };
+        return new ApiResponse<BookResponse>() { Items = sortedBookings, TotalItems = count };
     }
 
     #region Helpers
+
+    private IEnumerable<BookResponse> Sorting(IEnumerable<BookResponse> bookings, ApiOptions options)
+    {
+        return options.SortLabel switch
+        {
+            "CreatedAt" => options.SortDirection == 1
+                            ? bookings.OrderBy(b => b.CreatedAt)
+                            : bookings.OrderByDescending(b => b.CreatedAt),
+            
+            _ => bookings.OrderBy(b => b.CreatedAt),
+        };
+    }
+
     public void Dispose()
     {
         _client.Dispose();

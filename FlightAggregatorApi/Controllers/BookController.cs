@@ -9,9 +9,9 @@ namespace FlightAggregatorApi.Controllers;
 public class BookController(IBookService service)
 {
     [HttpGet("books")]
-    public async Task<ApiResponse<BookResponse>> GetAll([FromQuery] string userId, CancellationToken cancellationToken)
+    public async Task<ApiResponse<BookResponse>> GetAll([FromQuery] string userId, [FromQuery] ApiOptions options, CancellationToken cancellationToken)
     {
-        return await service.GetAll(userId, cancellationToken);
+        return await service.GetAll(userId, options, cancellationToken);
     }
     
     [HttpPost("books")]

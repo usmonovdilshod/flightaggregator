@@ -100,9 +100,10 @@ public class SearchService : ISearchService, IDisposable
             allFlights = allFlights.OrderBy(f => f.Price)
                                    .ThenBy(f => f.DepartureAirportCode)
                                    .ToList();
-            var count = allFlights.Count;
+            var sortedBookings = Sorting(allFlights, options).ToList();
+            var count = sortedBookings.Count;
             _logger.LogInformation("Flight search completed. Found {Count} flights.", count);
-            return new ApiResponse<FlightResponse>() { Items = allFlights , TotalItems = count };
+            return new ApiResponse<FlightResponse>() { Items = sortedBookings , TotalItems = count };
         }
         catch (Exception ex)
         {
@@ -112,6 +113,23 @@ public class SearchService : ISearchService, IDisposable
     }
 
     #region Helpers
+
+    private IEnumerable<FlightResponse> Sorting(IEnumerable<FlightResponse> bookings, ApiOptions options)
+    {
+        return options.SortLabel switch
+        {
+            "Price" => options.SortDirection == 1
+                            ? bookings.OrderBy(b => b.Price)
+                            : bookings.OrderByDescending(b => b.Price),
+            "Layovers" => options.SortDirection == 1
+                            ? bookings.OrderBy(b => b.Layovers)
+                            : bookings.OrderByDescending(b => b.Layovers),
+            "Airline" => options.SortDirection == 1
+                            ? bookings.OrderBy(b => b.Airline)
+                            : bookings.OrderByDescending(b => b.Airline),
+            _ => bookings.OrderBy(b => b.Id),
+        };
+    }
     public void Dispose()
     {
         _client.Dispose();

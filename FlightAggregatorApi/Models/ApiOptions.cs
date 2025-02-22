@@ -11,6 +11,8 @@ public class ApiOptions
     public DateTime? DepartureDate { get; set; }
     public DateTime? ArrivalDate { get; set; }
     public int? MaxLayovers { get; set; }
+    public string? SortLabel { get; set; }
+    public int SortDirection { get; set; } = 1;
 }
 
 public partial class ApiResponse<T> where T : class
