@@ -76,7 +76,7 @@ namespace FlightAggregatorApi.Services
         }
 
 
-        public async Task<List<BookView>> GetAll(string userId, CancellationToken cancellationToken)
+        public async Task<List<BookResponse>> GetAll(string userId, CancellationToken cancellationToken)
         {
             var nimbusUrl = _configuration["ExternalUrls:Nimbus"];
             var skylinkUrl = _configuration["ExternalUrls:SkyLink"];
@@ -119,7 +119,9 @@ namespace FlightAggregatorApi.Services
                 _logger.LogWarning("SkyLink booking API returned status code {StatusCode}", skylinkResponse.StatusCode);
             }
 
-            var allBookings = nimbusBookings.Concat(skylinkBookings).ToList();
+            var allBookings = nimbusBookings.MapToViewList("Nimbus")
+                .Concat(skylinkBookings.MapToViewList("SkyLink"))
+                .ToList();
             _logger.LogInformation("Fetched total {Count} bookings for User: {UserId}", allBookings.Count, userId);
             return allBookings;
         }

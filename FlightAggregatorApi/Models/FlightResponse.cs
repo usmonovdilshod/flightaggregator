@@ -1,6 +1,6 @@
 ﻿namespace FlightAggregatorApi.Models;
 
-public class FlightView
+public class FlightResponse
 {
     public long Id { get; set; }
     public string Airline { get; set; } = null!;
@@ -10,4 +10,5 @@ public class FlightView
     public DateTime DepartureDate { get; set; }
     public DateTime ArrivalDate { get; set; }
     public int Layovers { get; set; }
+    public string Source { get; set; } = null!;
 }
