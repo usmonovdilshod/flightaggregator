@@ -17,6 +17,6 @@ public class BookController(IBookService service)
     [HttpPost("books")]
     public async Task<long> Create([FromBody] BookCreateRequest data, CancellationToken cancellationToken)
     {
-        return await service.Create(data.UserId, data.FlightId, cancellationToken);
+        return await service.Create(data.UserId, data.FlightId, data.Source, cancellationToken);
     }
 }
