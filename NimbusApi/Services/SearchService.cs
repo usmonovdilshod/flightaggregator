@@ -22,6 +22,18 @@ public class SearchService(AppDbContext context) : ISearchService
             query = query.Where(f => EF.Functions.Like(f.DepartureAirportCode.ToLower(), departureCode) &&
                                      EF.Functions.Like(f.DestinationAirportCode.ToLower(), destinationCode));
         }
+        else if (!string.IsNullOrWhiteSpace(options.DepartureAirportCode))
+        {
+            string departureCode = options.DepartureAirportCode.Trim().ToLower();
+
+            query = query.Where(f => EF.Functions.Like(f.DepartureAirportCode.ToLower(), departureCode));
+        }
+        else if (!string.IsNullOrWhiteSpace(options.DestinationAirportCode))
+        {
+            string destinationCode = options.DestinationAirportCode.Trim().ToLower();
+
+            query = query.Where(f => EF.Functions.Like(f.DestinationAirportCode.ToLower(), destinationCode));
+        }
 
         if (!string.IsNullOrEmpty(options.Airline))
         {
