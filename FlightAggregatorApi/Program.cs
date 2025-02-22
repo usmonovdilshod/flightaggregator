@@ -1,4 +1,6 @@
+using FlightAggregatorApi.Abstracts;
 using FlightAggregatorApi.ServiceCollection;
+using FlightAggregatorApi.Services;
 using Serilog;
 using Serilog.Events;
 
@@ -37,7 +39,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
 builder.Services.AddLogging();
 builder.Services.AddHttpClient();
-
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IBookService, BookService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

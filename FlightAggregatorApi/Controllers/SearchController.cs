@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using FlightAggregatorApi.Abstracts;
+using FlightAggregatorApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace FlightAggregatorApi.Controllers
+namespace FlightAggregatorApi.Controllers;
+
+
+[ApiController]
+[Route("api/flights")]
+public class SearchController(ISearchService searchService)
 {
-    [ApiController]
-    [Route("api")]
-    public class SearchController : ControllerBase
+    [HttpGet("search")]
+    public async Task<List<FlightView>> Search([FromQuery] ApiOptions options,
+        CancellationToken cancellationToken)
     {
-        [HttpGet("search")]
-        public async Task<List<string>> Search(
-         CancellationToken cancellationToken)
-        {
-            return ["sadas", "dsadasd"];
-        }
+        return await searchService.SearchFlights(options, cancellationToken);
     }
 }

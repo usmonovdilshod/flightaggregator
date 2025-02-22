@@ -1,4 +1,5 @@
-﻿using NimbusApi.Abstracts;
+﻿using Microsoft.EntityFrameworkCore;
+using NimbusApi.Abstracts;
 using NimbusApi.Data;
 using NimbusApi.Entity;
 

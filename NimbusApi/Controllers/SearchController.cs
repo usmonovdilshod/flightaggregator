@@ -7,7 +7,7 @@ namespace NimbusApi.Controllers;
 
 
 [ApiController]
-[Route("api")]
+[Route("api/flights")]
 public class SearchController(ISearchService searchService)
 {
     [HttpGet("search")]
