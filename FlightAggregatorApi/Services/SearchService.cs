@@ -23,7 +23,7 @@ namespace FlightAggregatorApi.Services
         }
         #endregion
 
-        public async Task<List<FlightView>> SearchFlights(ApiOptions options, CancellationToken cancellationToken)
+        public async Task<List<FlightResponse>> SearchFlights(ApiOptions options, CancellationToken cancellationToken)
         {
             var nimbusUrl = _configuration["ExternalUrls:Nimbus"];
             var skylinkUrl = _configuration["ExternalUrls:SkyLink"];
@@ -94,7 +94,9 @@ namespace FlightAggregatorApi.Services
                 }
 
                 // Merge the results
-                var allFlights = nimbusFlights.Concat(skylinkFlights).ToList();
+                var allFlights = nimbusFlights.MapToViewList("Nimbus")
+                    .Concat(skylinkFlights.MapToViewList("SkyLink"))
+                    .ToList();
 
                 // Default sorting: first by Price, then by Departure (if available)
                 allFlights = allFlights.OrderBy(f => f.Price)

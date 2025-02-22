@@ -5,5 +5,5 @@ namespace FlightAggregatorApi.Abstracts;
 
 public interface ISearchService
 { 
-    public Task<List<FlightView>> SearchFlights(ApiOptions options, CancellationToken cancellationToken);
+    public Task<List<FlightResponse>> SearchFlights(ApiOptions options, CancellationToken cancellationToken);
 }

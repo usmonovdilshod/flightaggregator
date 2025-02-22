@@ -1,7 +1,4 @@
-﻿using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-
-namespace NimbusApi.Models;
+﻿namespace NimbusApi.Models;
 
 
 public class ApiOptions
@@ -16,9 +13,3 @@ public class ApiOptions
     public int? MaxLayovers { get; set; }
 }
 
-public partial class ApiResponse<T> where T : class
-{
-    [property: DataMember][JsonPropertyName("items")] public IEnumerable<T> Items { get; set; } = [];
-
-    [property: DataMember][JsonPropertyName("total_items")] public int TotalItems { get; set; }
-}

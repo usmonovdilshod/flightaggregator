@@ -10,7 +10,7 @@ namespace FlightAggregatorApi.Controllers;
 public class SearchController(ISearchService searchService)
 {
     [HttpGet("search")]
-    public async Task<List<FlightView>> Search([FromQuery] ApiOptions options,
+    public async Task<List<FlightResponse>> Search([FromQuery] ApiOptions options,
         CancellationToken cancellationToken)
     {
         return await searchService.SearchFlights(options, cancellationToken);

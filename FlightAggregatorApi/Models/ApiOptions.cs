@@ -1,7 +1,4 @@
-﻿using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-
-namespace FlightAggregatorApi.Models;
+﻿namespace FlightAggregatorApi.Models;
 
 
 public class ApiOptions
@@ -18,7 +15,6 @@ public class ApiOptions
 
 public partial class ApiResponse<T> where T : class
 {
-    [property: DataMember][JsonPropertyName("items")] public IEnumerable<T> Items { get; set; } = [];
-
-    [property: DataMember][JsonPropertyName("total_items")] public int TotalItems { get; set; }
+    public IEnumerable<T> Items { get; set; } = [];
+    public int TotalItems { get; set; }
 }
