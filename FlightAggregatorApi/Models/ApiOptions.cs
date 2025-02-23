@@ -9,7 +9,6 @@ public class ApiOptions
     public double? MinPrice { get; set; }
     public double? MaxPrice { get; set; }
     public DateTime? DepartureDate { get; set; }
-    public DateTime? ArrivalDate { get; set; }
     public int? MaxLayovers { get; set; }
     public string? SortLabel { get; set; }
     public int SortDirection { get; set; } = 1;

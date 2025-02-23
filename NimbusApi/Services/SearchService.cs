@@ -58,15 +58,6 @@ public class SearchService(AppDbContext context) : ISearchService
             query = query.Where(f => f.DepartureDate >= departureDateStart && f.DepartureDate < departureDateEnd);
         }
 
-        if (options.ArrivalDate.HasValue)
-        {
-            var arrivalDateStart = DateTime.SpecifyKind(options.ArrivalDate.Value.Date, DateTimeKind.Utc);
-            var arrivalDateEnd = arrivalDateStart.AddDays(1);
-
-            query = query.Where(f => f.ArrivalDate >= arrivalDateStart && f.ArrivalDate < arrivalDateEnd);
-        }
-
-
         if (options.MaxLayovers.HasValue)
         {
             query = query.Where(f => f.Layovers <= options.MaxLayovers.Value);

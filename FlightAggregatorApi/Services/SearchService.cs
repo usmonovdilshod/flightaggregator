@@ -48,9 +48,6 @@ public class SearchService : ISearchService, IDisposable
         if (options.DepartureDate.HasValue)
             queryParams.Add($"departureDate={options.DepartureDate.Value:yyyy-MM-dd}");
 
-        if (options.ArrivalDate.HasValue)
-            queryParams.Add($"arrivalDate={options.ArrivalDate.Value:yyyy-MM-dd}");
-
         if (options.MaxLayovers.HasValue)
             queryParams.Add($"maxLayovers={options.MaxLayovers.Value}");
 
