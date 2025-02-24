@@ -1,6 +1,8 @@
 using FlightAggregatorApi.Abstracts;
+using FlightAggregatorApi.Data;
 using FlightAggregatorApi.ServiceCollection;
 using FlightAggregatorApi.Services;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
@@ -34,6 +36,11 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+#region DATABASE
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+#endregion
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
@@ -55,5 +62,10 @@ app.UseSerilogRequestLogging();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+//var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
+//using var dbContext = dbContextFactory.CreateDbContext();
+//await dbContext.Database.MigrateAsync();
 
 app.Run();
