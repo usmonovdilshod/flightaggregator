@@ -2,6 +2,12 @@ using FlightAggregatorApi.Abstracts;
 using FlightAggregatorApi.Data;
 using FlightAggregatorApi.ServiceCollection;
 using FlightAggregatorApi.Services;
+using FlightAggregatorApi.TokenHandler;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
@@ -46,11 +52,35 @@ builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
 builder.Services.AddLogging();
 builder.Services.AddHttpClient();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = Constant.Scheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddScheme<AuthenticationSchemeOptions, GoogleAccessTokenAuthenticationHandler>(Constant.Scheme, null)
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
+    options.CallbackPath = $"/{builder.Configuration["Google:RedirectUri"]}";
+});
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IGoogleAuthHelper, GoogleAuthHelperService>();
+builder.Services.AddScoped<IGoogleAuthorization, GoogleAuthorizationService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IBookService, BookService>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCors(builder =>
+{
+    builder.AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowAnyOrigin();
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -59,7 +89,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseSerilogRequestLogging();
-app.UseAuthorization();
+app.UseAuthentication().UseAuthorization();
 
 app.MapControllers();
 

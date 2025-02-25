@@ -36,11 +36,11 @@ public class GoogleAccessTokenAuthenticationHandler(IOptionsMonitor<Authenticati
         }
 
         List<Claim> claims = [new(ClaimTypes.NameIdentifier, user!.UserId.ToString())];
-        var identity = new ClaimsIdentity(claims, "GoogleAccessToken");
+        var identity = new ClaimsIdentity(claims, Constant.Scheme);
 
         return AuthenticateResult.Success(
             new AuthenticationTicket(
-                new ClaimsPrincipal(identity), "GoogleAccessToken")
+                new ClaimsPrincipal(identity), Constant.Scheme)
             );
     }
 
