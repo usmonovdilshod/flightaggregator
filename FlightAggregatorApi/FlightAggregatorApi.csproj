@@ -31,4 +31,8 @@
 	  <Folder Include="Data\Migartions\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\FlightAggregatorShared\FlightAggregatorShared.csproj" />
+	</ItemGroup>
+
 </Project>
