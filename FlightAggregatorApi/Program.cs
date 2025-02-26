@@ -94,8 +94,8 @@ app.UseAuthentication().UseAuthorization();
 app.MapControllers();
 
 
-//var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
-//using var dbContext = dbContextFactory.CreateDbContext();
-//await dbContext.Database.MigrateAsync();
+var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
+using var dbContext = dbContextFactory.CreateDbContext();
+await dbContext.Database.MigrateAsync();
 
 app.Run();

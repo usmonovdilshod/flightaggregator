@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace FlightAggregatorApi.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class AuthorizeController(IGoogleAuthorization googleAuthorization, AppDbContext context) : ControllerBase
 {
