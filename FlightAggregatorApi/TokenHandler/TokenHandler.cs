@@ -1,6 +1,7 @@
 ﻿using FlightAggregatorApi.Abstracts;
 using FlightAggregatorApi.Data;
 using FlightAggregatorApi.Entity;
+using FlightAggregatorShared.TokenHandler;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

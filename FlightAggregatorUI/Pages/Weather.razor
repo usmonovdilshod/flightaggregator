@@ -1,5 +1,7 @@
 ﻿@page "/weather"
-@inject HttpClient Http
+@using FlightAggregatorShared
+@using FlightAggregatorShared.TokenHandler
+@using System.Text.Json
 
 <PageTitle>Weather</PageTitle>
 
@@ -41,8 +43,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        string token = await localStorageService.GetItemAsStringAsync(Constant.Key);
+        if (!string.IsNullOrEmpty(token))
+        {
+            var client = httpClientFactory.CreateClient(Constant.Client);
+            var tokenModel = JsonSerializer.Deserialize<Token>(token);
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenModel!.AccessToken);
+            forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("weatherforecast");
+        }
     }
+
 
     public class WeatherForecast
     {
