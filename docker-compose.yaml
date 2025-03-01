@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  db_skylink:
+    image: postgres:15.3-alpine
+    container_name: db_skylink
+    restart: always
+    environment:
+      POSTGRES_USER: skylink_user
+      POSTGRES_PASSWORD: skylink_pass
+      POSTGRES_DB: skylink_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_skylink_data:/var/lib/postgresql/data
+      - ./Backup/skylink:/docker-entrypoint-initdb.d
+
+  skylink_api:
+    build:
+      context: .
+      dockerfile: SkyLinkApi/Dockerfile
+    container_name: skylink_api
+    depends_on:
+      - db_skylink
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7100
+    ports:
+      - "7104:7100"
+
+  db_nimbus:
+    image: postgres:15.3-alpine
+    container_name: db_nimbus
+    restart: always
+    environment:
+      POSTGRES_USER: nimbus_user
+      POSTGRES_PASSWORD: nimbus_pass
+      POSTGRES_DB: nimbus_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - db_nimbus_data:/var/lib/postgresql/data
+      - ./Backup/nimbus:/docker-entrypoint-initdb.d
+
+  nimbus_api:
+    build:
+      context: .
+      dockerfile: NimbusApi/Dockerfile
+    container_name: nimbus_api
+    depends_on:
+      - db_nimbus
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7100
+    ports:
+      - "7105:7100"
+
+  db_aggregator:
+    image: postgres:15.3-alpine
+    container_name: db_aggregator
+    restart: always
+    environment:
+      POSTGRES_USER: aggregator_user
+      POSTGRES_PASSWORD: aggregator_pass
+      POSTGRES_DB: aggregator_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_aggregator_data:/var/lib/postgresql/data
+
+  aggregator_api:
+    build:
+      context: .
+      dockerfile: FlightAggregatorApi/Dockerfile
+    container_name: flight_aggregator_api
+    depends_on:
+      - db_aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7100
+    ports:
+      - "7103:7100"
+ 
+  flightaggregator_ui:
+      build:
+        context: .
+        dockerfile: FlightAggregatorUI/Dockerfile
+      container_name: flightaggregator_ui
+      ports:
+        - "8080:80"
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Production
+
+volumes:
+  db_skylink_data:
+  db_nimbus_data:
+  db_aggregator_data:

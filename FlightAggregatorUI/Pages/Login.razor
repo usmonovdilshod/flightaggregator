@@ -1,0 +1,16 @@
+﻿@page "/login"
+
+@using FlightAggregatorShared.TokenHandler
+<button class="btn btn-primary" @onclick="LoginAsync">Login</button>
+
+@code{
+    async Task LoginAsync()
+    {
+        var client = httpClientFactory.CreateClient(Constant.Client);
+        var result = await client.GetAsync("/authorize");
+        if (result.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo(await result.Content.ReadAsStringAsync());
+        }
+    }
+}

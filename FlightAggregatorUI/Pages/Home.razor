@@ -1,0 +1,383 @@
+﻿@page "/"
+
+@using System.Security.Claims
+@using System.Globalization
+@using FlightAggregatorShared.Models
+@inject IHttpClientFactory HttpClientFactory
+
+<!-- Hero Section -->
+<div class="hero">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Find Cheap Flights</h1>
+        <p class="lead">Search for the best deals quickly and easily</p>
+
+        <!-- Search Card -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card p-4 shadow">
+                    <div class="row g-3 align-items-end">
+                        <!-- From -->
+                        <div class="col-sm-4">
+                            <label for="from" class="form-label">From</label>
+                            <input type="text" class="form-control" id="from"
+                            placeholder="Airport"
+                            @bind="DepartureAirportCode" />
+                        </div>
+
+                        <!-- Destination -->
+                        <div class="col-sm-4">
+                            <label for="to" class="form-label">Destination</label>
+                            <input type="text" class="form-control" id="to"
+                            placeholder="Airport"
+                            @bind="DestinationAirportCode" />
+                        </div>
+
+                        <!-- When -->
+                        <div class="col-sm-4">
+                            <label for="departure" class="form-label">When</label>
+                            <input type="date" class="form-control" id="departure"
+                            @bind="DepartureDate" />
+                        </div>
+
+
+                        <!-- Third Row: Max Layovers & Airline -->
+                        <div class="row g-3 align-items-end mt-3">
+                            <!-- Airline -->
+                            <div class="col-sm-6">
+                                <label for="airline" class="form-label">Airline</label>
+                                <input type="text" class="form-control" id="airline"
+                                       placeholder="Airline" @bind="Airline" />
+                            </div>
+                            <!-- Max Layovers -->
+                            <div class="col-sm-6">
+                                <label for="maxLayovers" class="form-label">Max Layovers</label>
+                                <input type="number" class="form-control" id="maxLayovers"
+                                       placeholder="Maximum Layovers" @bind="MaxLayovers" />
+                            </div>
+                        </div>
+
+
+                        <!-- Second Row: Price Filters -->
+                        <div class="row g-3 align-items-end mt-3">
+                            <!-- Min Price -->
+                            <div class="col-sm-6">
+                                <label for="minPrice" class="form-label">Min Price</label>
+                                <input type="number" class="form-control" id="minPrice"
+                                       placeholder="Minimum Price" @bind="MinPrice" />
+                            </div>
+                            <!-- Max Price -->
+                            <div class="col-sm-6">
+                                <label for="maxPrice" class="form-label">Max Price</label>
+                                <input type="number" class="form-control" id="maxPrice"
+                                       placeholder="Maximum Price" @bind="MaxPrice" />
+                            </div>
+                        </div>
+
+                        <!-- Fourth Row: Sorting Options -->
+                        <div class="row g-3 align-items-end mt-3">
+                            <div class="col-sm-6">
+                                <label for="sortLabel" class="form-label">Sort By</label>
+                                <select class="form-select" id="sortLabel" @bind="SortLabel">
+                                    <option value="">Default</option>
+                                    <option value="Price">Price</option>
+                                    <option value="Layovers">Layovers</option>
+                                    <option value="Airline">Airline</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="isAscending" @bind="IsAscending" />
+                                    <label class="form-check-label" for="isAscending">
+                                        Ascending Order (unchecked for Descending)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        
+
+                        <!-- Button -->
+                        <div class="col-12 mt-3">
+                            <button class="btn btn-primary w-100" @onclick="SearchFlightsAsync">
+                                Find Tickets
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results Section -->
+@if (Flights.Items != null && Flights.Items.Count() > 0)
+{
+    <div class="container my-4">
+        <h3>Search Results</h3>
+        <!-- Scrollable container -->
+        <div style="max-height: 600px; overflow-y: auto;">
+            @foreach (var flight in Flights.Items)
+            {
+                <div class="card mb-3 p-3 shadow-sm">
+                    <div class="row align-items-center">
+                        <!-- Price & Airline -->
+                        <div class="col-md-3">
+                            <div class="fs-5 fw-bold">
+                                @flight.Price.ToString("N0", CultureInfo.InvariantCulture) UZS
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">@flight.Airline</small>
+                                <small class="text-muted">@flight.Source</small>
+                            </div>
+                        </div>
+
+                        <!-- Departure Info -->
+                        <div class="col-md-2">
+                            <div class="fw-bold">@flight.DepartureDate.ToString("ddd, dd MMM, HH:mm")</div>
+                            <div class="text-muted">@flight.DepartureAirportCode</div>
+                        </div>
+
+                        <!-- Arrival Info -->
+                        <div class="col-md-2">
+                            <div class="fw-bold">@flight.ArrivalDate.ToString("ddd, dd MMM, HH:mm")</div>
+                            <div class="text-muted">@flight.DestinationAirportCode</div>
+                        </div>
+
+                        <!-- Duration & Layovers -->
+                        <div class="col-md-3">
+                            <div>In flight: @GetDuration(flight.DepartureDate, flight.ArrivalDate)</div>
+                            <div>Layovers: @flight.Layovers</div>
+                        </div>
+
+                        <!-- Select Ticket Button -->
+                        <div class="col-md-2 text-end">
+                            <AuthorizeView>
+                                <Authorized>
+                                    <button class="btn btn-warning" @onclick="() => BookTicketAsync(flight)">
+                                        Book Ticket
+                                    </button>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <!-- Optionally, you could show a disabled button or nothing at all -->
+                                    <button class="btn btn-warning" disabled>
+                                        Login to Book
+                                    </button>
+                                </NotAuthorized>
+                            </AuthorizeView>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else if (Flights.Items != null && Flights.Items.Count() == 0)
+{
+    <div class="container my-4">
+        <p>No flights found. Please try different search criteria.</p>
+    </div>
+}
+
+
+<!-- Authorized-Only My Bookings Section -->
+<AuthorizeView>
+    <Authorized>
+        @if (UserBookings.Items != null && UserBookings.Items.Count() > 0)
+        {
+            <div class="container my-4">
+                <h3>My Bookings</h3>
+                <div style="max-height: 600px; overflow-y: auto;">
+                    @foreach (var booking in UserBookings.Items)
+                    {
+                        <div class="card mb-3 p-3 shadow-sm">
+                            <div class="row align-items-center">
+                                <!-- Price & Airline -->
+                                <div class="col-md-3">
+                                    <div class="fs-5 fw-bold">
+                                        @booking.Flight?.Price.ToString("N0", CultureInfo.InvariantCulture) UZS
+                                    </div>
+                                    <small class="text-muted">@booking?.Flight?.Airline</small>
+                                </div>
+
+                                <!-- Departure Info -->
+                                <div class="col-md-2">
+                                    <div class="fw-bold">
+                                        @booking?.Flight?.DepartureDate.ToString("ddd, dd MMM, HH:mm")
+                                    </div>
+                                    <div class="text-muted">@booking?.Flight?.DepartureAirportCode</div>
+                                </div>
+
+                                <!-- Arrival Info -->
+                                <div class="col-md-2">
+                                    <div class="fw-bold">
+                                        @booking?.Flight?.ArrivalDate.ToString("ddd, dd MMM, HH:mm")
+                                    </div>
+                                    <div class="text-muted">@booking?.Flight?.DestinationAirportCode</div>
+                                </div>
+
+                                <!-- Duration & Layovers -->
+                                <div class="col-md-3">
+                                    <div>
+                                        In flight: @GetDuration(booking.Flight.DepartureDate, booking.Flight.ArrivalDate)
+                                    </div>
+                                    <div>Layovers: @booking?.Flight?.Layovers</div>
+                                </div>
+
+                                <!-- Booking Info -->
+                                <div class="col-md-2 text-end">
+                                    <div class="text-muted" style="font-size:0.9em;">
+                                        Booked on: @booking?.CreatedAt.ToString("ddd, dd MMM, HH:mm")
+                                    </div>
+                                    <div class="text-muted" style="font-size:0.9em;">
+                                        Source: @booking?.Source
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (UserBookings.Items != null && UserBookings.Items.Count() == 0)
+        {
+            <div class="container my-4">
+                <h5>You have no bookings yet.</h5>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="container my-4">
+            <h5>Please log in to see your bookings</h5>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    public string? DepartureAirportCode { get; set; } = "SEA";
+    public string? DestinationAirportCode { get; set; } = "SFO";
+    private DateTime DepartureDate = DateTime.Today;
+    private double? MinPrice { get; set; }
+    private double? MaxPrice { get; set; }
+    private int? MaxLayovers { get; set; }
+    private string? Airline { get; set; }
+    public string? SortLabel { get; set; }
+    private bool IsAscending { get; set; } = true;
+    private ApiResponse<FlightResponse> Flights = new ApiResponse<FlightResponse>();
+    private ApiResponse<BookResponse> UserBookings = new ApiResponse<BookResponse>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await LoadUserBookingsAsync(userId);
+            }
+        }
+    }
+
+    private async Task SearchFlightsAsync()
+    {
+        try
+        {
+            var client = HttpClientFactory.CreateClient(Constant.Client);
+
+            string url = $"api/flights/search?DepartureAirportCode={DepartureAirportCode}&DestinationAirportCode={DestinationAirportCode}&DepartureDate={DepartureDate:yyyy-MM-dd}";
+
+            if (MinPrice.HasValue)
+            {
+                url += $"&minPrice={MinPrice.Value}";
+            }
+            if (MaxPrice.HasValue)
+            {
+                url += $"&maxPrice={MaxPrice.Value}";
+            }
+            if (MaxLayovers.HasValue)
+            {
+                url += $"&maxLayovers={MaxLayovers.Value}";
+            }
+            if (!string.IsNullOrEmpty(Airline))
+            {
+                url += $"&airline={Uri.EscapeDataString(Airline)}";
+            }
+            if (!string.IsNullOrEmpty(SortLabel))
+            {
+                url += $"&sortLabel={Uri.EscapeDataString(SortLabel)}";
+                int sortDirection = IsAscending ? 1 : -1;
+                url += $"&sortDirection={sortDirection}";
+            }
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<FlightResponse>>();
+                Flights = result ?? new ApiResponse<FlightResponse>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Flights = new ApiResponse<FlightResponse>();
+        }
+    }
+
+    private string GetDuration(DateTime departure, DateTime arrival)
+    {
+        var diff = arrival - departure;
+        return $"{(int)diff.TotalHours}h {diff.Minutes}m";
+    }
+
+    private async Task LoadUserBookingsAsync(string userId)
+    {
+        try
+        {
+            var client = HttpClientFactory.CreateClient(Constant.Client);
+            var url = $"api/books?userId={userId}";
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<BookResponse>>();
+                UserBookings = apiResponse ?? new ApiResponse<BookResponse>();
+            }
+        }
+        catch (Exception ex)
+        {
+            UserBookings = new ApiResponse<BookResponse>();
+        }
+    }
+
+    private async Task BookTicketAsync(FlightResponse flight)
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+        var bookRequest = new BookCreateRequest
+        {
+            UserId = userId!,
+            FlightId = flight.Id,
+            Source = flight.Source
+        };
+
+        try
+        {
+            var client = HttpClientFactory.CreateClient(Constant.Client);
+            var response = await client.PostAsJsonAsync("api/books", bookRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                var bookingId = await response.Content.ReadFromJsonAsync<long>();
+                await LoadUserBookingsAsync(userId!);
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+}
+
+

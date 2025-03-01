@@ -1,0 +1,71 @@
+﻿@inherits LayoutComponentBase
+@inject IHttpClientFactory httpClientFactory
+@inject NavigationManager NavigationManager
+@using System.Security.Claims
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <!-- Brand/Logo -->
+        <a class="navbar-brand" href="/">My AviaApp</a>
+
+        <!-- Mobile Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapsible Content -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Right-aligned menu -->
+            <ul class="navbar-nav ms-auto">
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item">
+                            <button class="btn btn-outline-light" @onclick="LogoutAsync">
+                                Logout
+                            </button>
+                        </li>
+                    </Authorized>
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <button class="btn btn-outline-light" @onclick="LoginAsync">
+                                Login
+                            </button>
+                        </li>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page">
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+
+
+@code {
+    async Task LoginAsync()
+    {
+        var client = httpClientFactory.CreateClient(Constant.Client);
+        var result = await client.GetAsync("/authorize");
+        if (result.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo(await result.Content.ReadAsStringAsync());
+        }
+    }
+
+    async Task LogoutAsync()
+    {
+        await localStorageService.DeleteItemAsync(Constant.Key);
+        NavigationManager.NavigateTo("/", true);
+    }
+}
